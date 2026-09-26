@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reviewer Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        /* HEADER */
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 20px 40px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .trust-box {
+            font-size: 20px;
+        }
+
+        #trustScore {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        /* FATIGUE BANNER */
+
+        .fatigue-banner {
+            background: #dc2626;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .fatigue-banner span {
+            display: block;
+            font-size: 15px;
+            margin-top: 5px;
+        }
+
+        /* CANARY FLASH */
+
+        .canary-flash {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+
+            padding: 18px 25px;
+            border-radius: 10px;
+
+            background: #2563eb;
+            color: white;
+
+            font-weight: bold;
+            z-index: 100;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* STAT CARDS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+
+            padding: 30px 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+
+            border-radius: 12px;
+
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            margin-top: 0;
+        }
+
+        .stat-card p {
+            font-size: 35px;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+
+        /* ESCALATION */
+
+        .escalation {
+            margin: 0 40px 25px;
+
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 12px;
+        }
+
+        #status {
+            font-weight: bold;
+        }
+
+        /* QUEUE */
+
+        .queue {
+            margin: 0 40px 25px;
+        }
+
+        .queue-item {
+            background: white;
+
+            padding: 20px;
+            margin-bottom: 15px;
+
+            border-radius: 12px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .entry h3 {
+            margin-top: 0;
+        }
+
+        .confidence {
+            font-weight: bold;
+        }
+
+        /* BUTTONS */
+
+        button {
+            border: none;
+
+            padding: 12px 18px;
+            margin: 5px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+        .approve {
+            background: #16a34a;
+            color: white;
+        }
+
+        .reject {
+            background: #dc2626;
+            color: white;
+        }
+
+        button:disabled {
+            background: #9ca3af;
+            color: #e5e7eb;
+
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* CONFIRMATION */
+
+        .confirmation {
+            margin: 0 40px 25px;
+
+            background: #fff7ed;
+
+            border: 2px solid #f97316;
+
+            padding: 25px;
+
+            border-radius: 12px;
+        }
+
+        textarea {
+            width: 100%;
+
+            min-height: 100px;
+
+            padding: 12px;
+
+            margin: 10px 0;
+
+            border-radius: 7px;
+
+            border: 1px solid #aaa;
+
+            resize: vertical;
+        }
+
+        /* DELAY */
+
+        .delay {
+            background: #7f1d1d;
+
+            color: white;
+
+            text-align: center;
+
+            padding: 15px;
+
+            font-size: 18px;
+
+            font-weight: bold;
+        }
+
+        /* DEMO CONTROLS */
+
+        .demo {
+            margin: 0 40px 40px;
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+        }
+
+        .demo button {
+            background: #111827;
+            color: white;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .queue-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- =====================================
+         HEADER
+    ====================================== -->
+
+    <header>
+
+        <h1>Reviewer Dashboard</h1>
+
+        <div class="trust-box">
+
+            Trust:
+            <span id="trustScore">80</span>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================
+         FATIGUE BANNER
+    ====================================== -->
+
+    <div id="fatigueBanner"
+         class="fatigue-banner hidden">
+
+        ⚠️ FATIGUE DETECTED
+
+        <span>
+            Trust level is low. Review actions are temporarily restricted.
+        </span>
+
+    </div>
+
+
+    <!-- =====================================
+         FORCED DELAY
+    ====================================== -->
+
+    <div id="delayBox"
+         class="delay hidden">
+
+        ⏳ Review temporarily frozen.
+
+        Please wait
+        <span id="countdown">5</span>
+        seconds.
+
+    </div>
+
+
+    <!-- =====================================
+         CANARY FLASH
+    ====================================== -->
+
+    <div id="canaryFlash"
+         class="canary-flash hidden">
+
+        Canary result
+
+    </div>
+
+
+    <!-- =====================================
+         DASHBOARD COUNTERS
+    ====================================== -->
+
+    <section class="stats">
+
+        <div class="stat-card">
+
+            <h3>Live Alertness</h3>
+
+            <p id="alertness">80</p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>Reviewed</h3>
+
+            <p id="reviewed">0</p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>Canaries Caught</h3>
+
+            <p id="caught">0</p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h3>Canaries Missed</h3>
+
+            <p id="missed">0</p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         ESCALATION STATUS
+    ====================================== -->
+
+    <section class="escalation">
+
+        <h2>Escalation Status</h2>
+
+        <p id="status">
+            Normal review mode
+        </p>
+
+        <p>
+            Trust threshold:
+            <strong>50</strong>
+        </p>
+
+    </section>
+
+
+    <!-- =====================================
+         REVIEW QUEUE
+    ====================================== -->
+
+    <section class="queue">
+
+        <h2>Review Queue</h2>
+
+
+        <!-- ENTRY 1 -->
+
+        <div class="queue-item">
+
+            <div class="entry">
+
+                <h3>
+                    Patient Intake #001
+                </h3>
+
+                <p>
+                    Possible medication interaction
+                </p>
+
+                <span class="confidence">
+                    Confidence: 92%
+                </span>
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    class="approve"
+                    onclick="approveEntry(this)">
+
+                    Approve
+
+                </button>
+
+
+                <button
+                    class="reject"
+                    onclick="rejectEntry(this)">
+
+                    Reject
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ENTRY 2 -->
+
+        <div class="queue-item">
+
+            <div class="entry">
+
+                <h3>
+                    Patient Intake #002
+                </h3>
+
+                <p>
+                    Missing information detected
+                </p>
+
+                <span class="confidence">
+                    Confidence: 76%
+                </span>
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    class="approve"
+                    onclick="approveEntry(this)">
+
+                    Approve
+
+                </button>
+
+
+                <button
+                    class="reject"
+                    onclick="rejectEntry(this)">
+
+                    Reject
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ENTRY 3 -->
+
+        <div class="queue-item">
+
+            <div class="entry">
+
+                <h3>
+                    Patient Intake #003
+                </h3>
+
+                <p>
+                    Unusual response detected
+                </p>
+
+                <span class="confidence">
+                    Confidence: 64%
+                </span>
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    class="approve"
+                    onclick="approveEntry(this)">
+
+                    Approve
+
+                </button>
+
+
+                <button
+                    class="reject"
+                    onclick="rejectEntry(this)">
+
+                    Reject
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================
+         WRITTEN CONFIRMATION
+    ====================================== -->
+
+    <section id="confirmationBox"
+             class="confirmation hidden">
+
+        <h2>
+            Additional Confirmation Required
+        </h2>
+
+        <p>
+            Your trust level is low.
+            Please provide written confirmation
+            before continuing.
+        </p>
+
+
+        <textarea
+            id="confirmationText"
+            placeholder="Explain why you want to continue...">
+        </textarea>
+
+
+        <button onclick="submitConfirmation()">
+
+            Submit Confirmation
+
+        </button>
+
+    </section>
+
+
+    <!-- =====================================
+         DEMO CONTROLS
+    ====================================== -->
+
+    <section class="demo">
+
+        <h2>Demo Controls</h2>
+
+        <p>
+            These buttons simulate backend events.
+        </p>
+
+
+        <button onclick="simulateLowAlertness()">
+
+            Low Alertness
+
+        </button>
+
+
+        <button onclick="simulateHighAlertness()">
+
+            High Alertness
+
+        </button>
+
+
+        <button onclick="simulateCanaryMiss()">
+
+            ✗ Canary Miss
+
+        </button>
+
+
+        <button onclick="simulateCanaryCatch()">
+
+            ✓ Canary Catch
+
+        </button>
+
+    </section>
+
+
+
+    <!-- =====================================
+         JAVASCRIPT
+    ====================================== -->
+
+    <script>
+
+        // =====================================
+        // VARIABLES
+        // =====================================
+
+        let alertnessScore = 80;
+
+        let canaryScore = 100;
+
+        let trustScore = 80;
+
+        const TRUST_THRESHOLD = 50;
+
+        let reviewed = 0;
+
+        let caught = 0;
+
+        let missed = 0;
+
+        let delayActive = false;
+
+
+        // =====================================
+        // CALCULATE TRUST
+        // =====================================
+
+        function calculateTrust() {
+
+            /*
+                Alertness = 70%
+                Canary performance = 30%
+
+                Both are combined into
+                ONE trust value.
+            */
+
+            trustScore =
+                (alertnessScore * 0.7) +
+                (canaryScore * 0.3);
+
+
+            trustScore = Math.round(trustScore);
+
+
+            updateDashboard();
+
+            checkEscalation();
+        }
+
+
+        // =====================================
+        // UPDATE DASHBOARD
+        // =====================================
+
+        function updateDashboard() {
+
+            document.getElementById(
+                "trustScore"
+            ).innerText = trustScore;
+
+
+            document.getElementById(
+                "alertness"
+            ).innerText = alertnessScore;
+
+
+            document.getElementById(
+                "reviewed"
+            ).innerText = reviewed;
+
+
+            document.getElementById(
+                "caught"
+            ).innerText = caught;
+
+
+            document.getElementById(
+                "missed"
+            ).innerText = missed;
+        }
+
+
+        // =====================================
+        // ESCALATION LOGIC
+        // =====================================
+
+        function checkEscalation() {
+
+            const buttons =
+                document.querySelectorAll(
+                    ".approve, .reject"
+                );
+
+
+            const banner =
+                document.getElementById(
+                    "fatigueBanner"
+                );
+
+
+            const confirmation =
+                document.getElementById(
+                    "confirmationBox"
+                );
+
+
+            const status =
+                document.getElementById(
+                    "status"
+                );
+
+
+            // LOW TRUST
+
+            if (
+                trustScore < TRUST_THRESHOLD
+            ) {
+
+                buttons.forEach(
+                    button => {
+
+                        button.disabled = true;
+
+                    }
+                );
+
+
+                banner.classList.remove(
+                    "hidden"
+                );
+
+
+                confirmation.classList.remove(
+                    "hidden"
+                );
+
+
+                status.innerText =
+                    "⚠️ Escalation active — review actions frozen";
+
+
+                // Start forced delay
+
+                if (!delayActive) {
+
+                    startForcedDelay();
+
+                }
+
+            }
+
+
+            // HIGH TRUST
+
+            else {
+
+                buttons.forEach(
+                    button => {
+
+                        button.disabled = false;
+
+                    }
+                );
+
+
+                banner.classList.add(
+                    "hidden"
+                );
+
+
+                confirmation.classList.add(
+                    "hidden"
+                );
+
+
+                status.innerText =
+                    "Normal review mode — actions enabled";
+            }
+        }
+
+
+        // =====================================
+        // FORCED DELAY
+        // =====================================
+
+        function startForcedDelay() {
+
+            delayActive = true;
+
+
+            const delayBox =
+                document.getElementById(
+                    "delayBox"
+                );
+
+
+            const countdown =
+                document.getElementById(
+                    "countdown"
+                );
+
+
+            delayBox.classList.remove(
+                "hidden"
+            );
+
+
+            let seconds = 5;
+
+
+            countdown.innerText =
+                seconds;
+
+
+            const timer =
+                setInterval(
+                    function () {
+
+                        seconds--;
+
+                        countdown.innerText =
+                            seconds;
+
+
+                        if (seconds <= 0) {
+
+                            clearInterval(timer);
+
+                            delayBox.classList.add(
+                                "hidden"
+                            );
+
+                            delayActive = false;
+                        }
+
+                    },
+                    1000
+                );
+        }
+
+
+        // =====================================
+        // CANARY CAUGHT
+        // =====================================
+
+        function simulateCanaryCatch() {
+
+            caught++;
+
+
+            /*
+                Catching a canary
+                increases trust.
+            */
+
+            canaryScore += 20;
+
+
+            if (canaryScore > 100) {
+
+                canaryScore = 100;
+
+            }
+
+
+            showCanaryFlash(
+                "✓ Canary Caught — Trust Recovering"
+            );
+
+
+            calculateTrust();
+        }
+
+
+        // =====================================
+        // CANARY MISSED
+        // =====================================
+
+        function simulateCanaryMiss() {
+
+            missed++;
+
+
+            /*
+                Missing a canary
+                decreases trust.
+            */
+
+            canaryScore -= 30;
+
+
+            if (canaryScore < 0) {
+
+                canaryScore = 0;
+
+            }
+
+
+            showCanaryFlash(
+                "✗ Canary Missed — Trust Reduced"
+            );
+
+
+            calculateTrust();
+        }
+
+
+        // =====================================
+        // CANARY FLASH
+        // =====================================
+
+        function showCanaryFlash(message) {
+
+            const flash =
+                document.getElementById(
+                    "canaryFlash"
+                );
+
+
+            flash.innerText =
+                message;
+
+
+            flash.classList.remove(
+                "hidden"
+            );
+
+
+            setTimeout(
+                function () {
+
+                    flash.classList.add(
+                        "hidden"
+                    );
+
+                },
+                2000
+            );
+        }
+
+
+        // =====================================
+        // APPROVE
+        // =====================================
+
+        function approveEntry(button) {
+
+            if (
+                trustScore < TRUST_THRESHOLD ||
+                delayActive
+            ) {
+
+                return;
+
+            }
+
+
+            reviewed++;
+
+
+            button.closest(
+                ".queue-item"
+            ).remove();
+
+
+            updateDashboard();
+        }
+
+
+        // =====================================
+        // REJECT
+        // =====================================
+
+        function rejectEntry(button) {
+
+            if (
+                trustScore < TRUST_THRESHOLD ||
+                delayActive
+            ) {
+
+                return;
+
+            }
+
+
+            reviewed++;
+
+
+            button.closest(
+                ".queue-item"
+            ).remove();
+
+
+            updateDashboard();
+        }
+
+
+        // =====================================
+        // WRITTEN CONFIRMATION
+        // =====================================
+
+        function submitConfirmation() {
+
+            const text =
+                document.getElementById(
+                    "confirmationText"
+                ).value.trim();
+
+
+            if (text === "") {
+
+                alert(
+                    "Please provide written confirmation."
+                );
+
+                return;
+            }
+
+
+            alert(
+                "Confirmation recorded."
+            );
+
+
+            console.log(
+                "Reviewer confirmation:",
+                text
+            );
+        }
+
+
+        // =====================================
+        // LOW ALERTNESS
+        // =====================================
+
+        function simulateLowAlertness() {
+
+            alertnessScore = 20;
+
+            calculateTrust();
+        }
+
+
+        // =====================================
+        // HIGH ALERTNESS
+        // =====================================
+
+        function simulateHighAlertness() {
+
+            alertnessScore = 95;
+
+            calculateTrust();
+        }
+
+
+        // =====================================
+        // BACKEND POLLING
+        // =====================================
+
+        function pollBackend() {
+
+            /*
+                DEMO VERSION
+
+                In the real application,
+                this would fetch the actual
+                alertness score from the backend.
+
+                Example:
+
+                fetch("/api/alertness")
+                    .then(response => response.json())
+                    .then(data => {
+                        alertnessScore = data.alertness;
+                    });
+            */
+
+
+            const change =
+                Math.floor(
+                    Math.random() * 7
+                ) - 3;
+
+
+            alertnessScore += change;
+
+
+            if (alertnessScore > 100) {
+
+                alertnessScore = 100;
+
+            }
+
+
+            if (alertnessScore < 0) {
+
+                alertnessScore = 0;
+
+            }
+
+
+            calculateTrust();
+        }
+
+
+        // =====================================
+        // POLL EVERY 3 SECONDS
+        // =====================================
+
+        setInterval(
+            pollBackend,
+            3000
+        );
+
+
+        // =====================================
+        // INITIALIZE
+        // =====================================
+
+        calculateTrust();
+
+    </script>
+
+</body>
+
+</html>
