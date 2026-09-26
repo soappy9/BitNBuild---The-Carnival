@@ -15,7 +15,7 @@ cap = cv2.VideoCapture(0)
 EAR_THRESHOLD = 0.21
 CONSEC_FRAMES = 2
 LONG_CLOSURE_FRAMES = 15
-WINDOW_SECONDS = 8   # shortened from 15 for faster testing/demo feedback
+WINDOW_SECONDS = 8
 
 closed_frame_count = 0
 blink_count = 0
@@ -24,7 +24,7 @@ long_closure_detected = False
 
 tracker = AlertnessTracker()
 
-BACKEND_URL = "http://127.0.0.1:5000/alertness"
+BACKEND_URL = "http://127.0.0.1:8000/alertness"
 last_sent = time.time()
 
 while True:
@@ -75,11 +75,7 @@ while True:
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
             if time.time() - last_sent > 2:
-                payload = {
-                    "alertness_score": alertness_score,
-                    "blinks_in_window": blinks_in_window,
-                    "long_closure": long_closure_detected
-                }
+                payload = {"score": alertness_score / 100.0}
                 try:
                     requests.post(BACKEND_URL, json=payload, timeout=1)
                 except requests.exceptions.RequestException:
