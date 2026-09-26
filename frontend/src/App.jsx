@@ -157,6 +157,20 @@ function LoginPage({ onLogin }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  <a href="/logic-and-dashboard/index.html">
+    <button style={{
+      padding: '10px 20px',
+      backgroundColor: '#0070f3',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer'
+    }}>
+      Go to Dashboard
+    </button>
+  </a>
+
+
   function handleSubmit(event) {
     event.preventDefault();
     if (password.trim().length < 6) {
