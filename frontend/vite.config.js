@@ -48,6 +48,7 @@ const logicDashboardPlugin = {
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: './',  // <-- ADD THIS EXACT LINE
   plugins: [react(), logicDashboardPlugin],
   server: {
     proxy: {
