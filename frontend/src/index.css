@@ -5,10 +5,25 @@
 html,
 body,
 #root {
-  margin: 0;
+  width: 100%;
+  min-width: 320px;
   min-height: 100%;
+  margin: 0;
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  color: #18392e;
+  background: #d8e8d6;
 }

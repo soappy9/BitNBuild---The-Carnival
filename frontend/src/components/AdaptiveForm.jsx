@@ -11,8 +11,10 @@ const LOCALE_RULES = {
       { name: "emiratesId", label: "Emirates ID", type: "text", required: true },
       { name: "phone", label: "Phone Number", type: "tel", required: true },
       { name: "dateOfBirth", label: "Date of Birth", type: "date", required: true },
-      { name: "language", label: "Preferred Language", type: "select", required: true,
-        options: ["Arabic", "English"] },
+      {
+        name: "language", label: "Preferred Language", type: "select", required: true,
+        options: ["Arabic", "English"]
+      },
     ],
   },
 
@@ -46,8 +48,10 @@ const LOCALE_RULES = {
       { name: "state", label: "State", type: "text", required: true },
       { name: "phone", label: "Phone Number", type: "tel", required: true },
       { name: "dateOfBirth", label: "Date of Birth", type: "date", required: true },
-      { name: "language", label: "Preferred Language", type: "select", required: false,
-        options: ["Hindi", "English", "Tamil", "Telugu", "Bengali", "Marathi", "Kannada", "Malayalam", "Gujarati", "Punjabi"] },
+      {
+        name: "language", label: "Preferred Language", type: "select", required: false,
+        options: ["Hindi", "English", "Tamil", "Telugu", "Bengali", "Marathi", "Kannada", "Malayalam", "Gujarati", "Punjabi"]
+      },
     ],
   },
 };
@@ -182,7 +186,7 @@ export default function AdaptiveForm() {
       <div className="adaptive-card">
 
         <div className="header">
-          <p className="eyebrow">THE CARNIVAL</p>
+          <p className="eyebrow">VIGIL</p>
 
           <h1>Adaptive Patient Form</h1>
 

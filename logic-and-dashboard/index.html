@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#19392f" />
+    <title>Logic &amp; Dashboard | Vigil</title>
+    <style>
+        :root {
+            font-family: "Segoe UI", sans-serif;
+            color: #1c3028;
+            background: #f2f5f1;
+            font-synthesis: none;
+            text-rendering: optimizeLegibility;
+            --ink: #1c3028;
+            --muted: #79867e;
+            --line: #e1e8e2;
+            --green: #34745c;
+            --green-soft: #edf6ee;
+            --red: #a83c34;
+            --red-soft: #fff0ed;
+            --gold: #927334;
+            --gold-soft: #faf5e7
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        [hidden] {
+            display: none !important
+        }
+
+        body {
+            margin: 0;
+            min-width: 320px;
+            min-height: 100vh;
+            background-image: linear-gradient(rgba(38, 83, 64, .018) 1px, transparent 1px), linear-gradient(90deg, rgba(38, 83, 64, .018) 1px, transparent 1px);
+            background-size: 30px 30px
+        }
+
+        button,
+        textarea {
+            font: inherit
+        }
+
+        button:focus-visible,
+        textarea:focus-visible,
+        summary:focus-visible {
+            outline: 3px solid rgba(52, 116, 92, .25);
+            outline-offset: 2px
+        }
+
+        .shell {
+            display: grid;
+            grid-template-columns: 210px minmax(0, 1fr);
+            min-height: 100vh
+        }
+
+        .rail {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px 14px;
+            color: #edf5ef;
+            background: #19392f
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 6px
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            place-items: center;
+            border: 1px solid #486356;
+            border-radius: 9px;
+            color: #d1ec96;
+            font-size: 19px
+        }
+
+        .brand strong,
+        .brand small {
+            display: block
+        }
+
+        .brand strong {
+            font-size: 15px
+        }
+
+        .brand small {
+            margin-top: 3px;
+            color: #a4b4a6;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1px
+        }
+
+        .rail-label {
+            margin: 8px 7px 0;
+            color: #8ca193;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.1px
+        }
+
+        .rail-status {
+            margin-top: auto;
+            padding: 11px 10px;
+            border: 1px solid #466253;
+            border-radius: 6px;
+            color: #bfd8c2;
+            font-size: 9px;
+            line-height: 1.5
+        }
+
+        .rail-status strong {
+            display: block;
+            margin-bottom: 3px;
+            color: #ebf4e9;
+            font-size: 10px
+        }
+
+        .main {
+            min-width: 0
+        }
+
+        .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 58px;
+            padding: 0 28px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(250, 251, 249, .94)
+        }
+
+        .crumb {
+            color: #8b9890;
+            font-size: 10px
+        }
+
+        .crumb strong {
+            color: #43554a;
+            font-weight: 600
+        }
+
+        .connection {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #44805b;
+            font-size: 9px;
+            font-weight: 600
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #5ca475
+        }
+
+        .content {
+            width: min(100%, 1180px);
+            margin: auto;
+            padding: 28px
+        }
+
+        .heading {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 18px
+        }
+
+        .eyebrow {
+            margin: 0 0 5px;
+            color: #829188;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.1px
+        }
+
+        .heading h1 {
+            margin: 0;
+            color: var(--ink);
+            font-size: 23px;
+            line-height: 1.25
+        }
+
+        .heading p:last-child {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 10px
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 14px
+        }
+
+        .metric {
+            min-width: 0;
+            padding: 13px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: #fff
+        }
+
+        .metric-label {
+            color: #79877e;
+            font-size: 9px
+        }
+
+        .metric-value {
+            display: block;
+            margin-top: 7px;
+            color: #263a2e;
+            font-size: 23px;
+            font-weight: 700
+        }
+
+        .metric-foot {
+            display: block;
+            margin-top: 3px;
+            color: #96a199;
+            font-size: 8px
+        }
+
+        .signal-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+            gap: 12px;
+            margin-bottom: 14px
+        }
+
+        .panel {
+            min-width: 0;
+            padding: 15px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: #fff
+        }
+
+        .panel-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px
+        }
+
+        .panel-heading h2 {
+            margin: 0;
+            color: #2d4235;
+            font-size: 12px
+        }
+
+        .panel-heading span {
+            color: #839188;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: .5px
+        }
+
+        .signal-cards {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px
+        }
+
+        .signal {
+            padding: 10px;
+            border-radius: 5px;
+            background: #f7f9f7
+        }
+
+        .signal small,
+        .signal strong {
+            display: block
+        }
+
+        .signal small {
+            color: #829087;
+            font-size: 8px
+        }
+
+        .signal strong {
+            margin-top: 5px;
+            color: #345640;
+            font-size: 15px
+        }
+
+        .signal p {
+            margin: 4px 0 0;
+            color: #8a978e;
+            font-size: 8px;
+            line-height: 1.45
+        }
+
+        .logic-copy {
+            margin: 10px 0 0;
+            padding-top: 9px;
+            border-top: 1px solid #edf1ed;
+            color: #738178;
+            font-size: 9px;
+            line-height: 1.55
+        }
+
+        .fatigue,
+        .recovery,
+        .confirm {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 11px 13px;
+            border-radius: 6px
+        }
+
+        .fatigue {
+            border: 1px solid #e5bbb4;
+            border-left: 4px solid #af3f36;
+            color: #a23831;
+            background: var(--red-soft)
+        }
+
+        .recovery {
+            border: 1px solid #e7dab9;
+            border-left: 4px solid #af8a3e;
+            color: #856b33;
+            background: var(--gold-soft)
+        }
+
+        .banner-copy {
+            display: grid;
+            gap: 3px
+        }
+
+        .banner-copy strong {
+            font-size: 10px
+        }
+
+        .banner-copy small {
+            font-size: 8px;
+            line-height: 1.4
+        }
+
+        .banner-value {
+            margin-left: auto;
+            font-size: 16px;
+            font-weight: 700
+        }
+
+        .confirm {
+            display: grid;
+            grid-template-columns: 1fr;
+            border: 1px solid #d8e6da;
+            color: #496f51;
+            background: #f2f8f2
+        }
+
+        .confirm strong {
+            font-size: 10px
+        }
+
+        .confirm small {
+            display: block;
+            margin-top: 3px;
+            color: #738b77;
+            font-size: 8px
+        }
+
+        .confirm textarea {
+            width: 100%;
+            min-height: 55px;
+            padding: 8px;
+            border: 1px solid #d2dfd3;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 9px;
+            resize: vertical
+        }
+
+        .queue-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 9px
+        }
+
+        .queue-toolbar h2 {
+            margin: 0;
+            font-size: 13px
+        }
+
+        .waiting {
+            color: #829087;
+            font-size: 9px
+        }
+
+        .queue {
+            display: grid;
+            gap: 7px
+        }
+
+        .entry {
+            display: grid;
+            grid-template-columns: 32px minmax(130px, 1fr) 66px max-content max-content;
+            align-items: center;
+            gap: 11px;
+            padding: 11px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: #fff
+        }
+
+        .avatar {
+            display: grid;
+            width: 29px;
+            height: 29px;
+            place-items: center;
+            border-radius: 50%;
+            color: #456b53;
+            background: #e9f1e9;
+            font-size: 9px;
+            font-weight: 700
+        }
+
+        .person {
+            display: grid;
+            min-width: 0;
+            gap: 3px
+        }
+
+        .person strong {
+            overflow: hidden;
+            color: #304438;
+            font-size: 9px;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        .person small {
+            overflow: hidden;
+            color: #87948c;
+            font-size: 8px;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        .confidence small,
+        .confidence strong {
+            display: block
+        }
+
+        .confidence small {
+            color: #8e9a92;
+            font-size: 8px
+        }
+
+        .confidence strong {
+            margin-top: 3px;
+            font-size: 11px
+        }
+
+        .low {
+            color: #b05245
+        }
+
+        .high {
+            color: #438060
+        }
+
+        .priority {
+            padding: 4px 6px;
+            border-radius: 4px;
+            color: #718078;
+            background: #eff3ef;
+            font-size: 8px
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px
+        }
+
+        .actions button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            min-height: 29px;
+            padding: 0 8px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-size: 8px;
+            font-weight: 600;
+            cursor: pointer
+        }
+
+        .approve {
+            color: #fff;
+            background: #34745c
+        }
+
+        .reject {
+            border-color: #ecd5d1 !important;
+            color: #a75045;
+            background: #fff
+        }
+
+        .actions button:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            filter: grayscale(.7)
+        }
+
+        .details {
+            grid-column: 1/-1;
+            padding-left: 43px
+        }
+
+        .details summary {
+            width: fit-content;
+            color: #4e7a5d;
+            font-size: 8px;
+            font-weight: 600;
+            cursor: pointer
+        }
+
+        .details dl {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            margin: 8px 0 0;
+            padding: 9px;
+            border: 1px solid #e8eee8;
+            border-radius: 4px;
+            background: #f9fbf9
+        }
+
+        .details dt {
+            margin-bottom: 3px;
+            color: #8c9990;
+            font-size: 7px
+        }
+
+        .details dd {
+            margin: 0;
+            overflow-wrap: anywhere;
+            color: #394f41;
+            font-size: 8px
+        }
+
+        .empty {
+            padding: 28px 15px;
+            border: 1px dashed #dfe7e0;
+            border-radius: 5px;
+            color: #8b9890;
+            text-align: center;
+            font-size: 9px
+        }
+
+        .foot {
+            margin: 10px 0 0;
+            color: #849188;
+            font-size: 8px;
+            line-height: 1.5
+        }
+
+        .toast {
+            position: fixed;
+            right: 17px;
+            bottom: 17px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            max-width: min(390px, calc(100vw - 30px));
+            padding: 11px 13px;
+            border: 1px solid #d7e5d9;
+            border-radius: 6px;
+            color: #365e45;
+            background: #f8fcf8;
+            box-shadow: 0 7px 20px #1f38291f;
+            font-size: 9px
+        }
+
+        .toast.show {
+            display: flex
+        }
+
+        .toast.caught {
+            border-color: #b8d5c0;
+            color: #315f41;
+            background: #eff8f0
+        }
+
+        .toast.missed,
+        .toast.error {
+            border-color: #e4b2a9;
+            color: #983c34;
+            background: #fff1ee
+        }
+
+        @media(max-width:900px) {
+            .shell {
+                grid-template-columns: 170px minmax(0, 1fr)
+            }
+
+            .content {
+                padding: 22px
+            }
+
+            .entry {
+                grid-template-columns: 30px minmax(100px, 1fr) 60px max-content max-content;
+                gap: 8px
+            }
+        }
+
+        @media(max-width:650px) {
+            .shell {
+                display: block
+            }
+
+            .rail {
+                display: none
+            }
+
+            .top {
+                min-height: 50px;
+                padding: 0 14px
+            }
+
+            .content {
+                padding: 18px 12px 25px
+            }
+
+            .heading h1 {
+                font-size: 20px
+            }
+
+            .metrics {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 7px
+            }
+
+            .metric {
+                padding: 10px
+            }
+
+            .metric-value {
+                font-size: 20px
+            }
+
+            .signal-grid {
+                grid-template-columns: 1fr;
+                gap: 8px
+            }
+
+            .signal-cards {
+                gap: 5px
+            }
+
+            .signal {
+                padding: 8px
+            }
+
+            .signal strong {
+                font-size: 13px
+            }
+
+            .entry {
+                grid-template-columns: 29px minmax(0, 1fr) 58px;
+                gap: 7px;
+                padding: 9px
+            }
+
+            .entry>.priority {
+                grid-column: 2;
+                justify-self: start
+            }
+
+            .actions {
+                grid-column: 1/-1;
+                justify-self: end
+            }
+
+            .actions button {
+                min-height: 32px;
+                padding: 0 10px
+            }
+
+            .details {
+                padding-left: 1px
+            }
+
+            .queue-toolbar {
+                align-items: flex-start;
+                flex-direction: column
+            }
+
+            .toast {
+                right: 10px;
+                bottom: 10px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+        <aside class="rail">
+            <div class="brand"><span class="brand-mark">+</span><span><strong>Vigil</strong><small>CARE
+                        OPERATIONS</small></span></div>
+            <div>
+                <p class="rail-label">LOGIC WORKSPACE</p>
+                <p class="rail-label">Review signals</p>
+            </div>
+            <div class="rail-status"><strong>Canary identity hidden</strong>Queue responses contain reviewer-visible
+                fields only. Trap outcomes appear after a decision.</div>
+            <div class="rail-status"><strong>Session only</strong>Queue, trust history, and counters reset when the
+                local API restarts.</div>
+        </aside>
+        <main class="main">
+            <header class="top"><span class="crumb">North wing / <strong>Logic &amp; dashboard</strong></span><span
+                    class="connection"><i class="dot"></i><span id="connection">Connecting</span></span></header>
+            <div class="content">
+                <div class="heading">
+                    <div>
+                        <p class="eyebrow">LIVE REVIEW SYSTEM</p>
+                        <h1>Logic &amp; dashboard</h1>
+                        <p>Confidence routing, reviewer trust, and human decisions.</p>
+                    </div>
+                </div>
+                <section class="metrics" aria-label="Review counters">
+                    <article class="metric"><span class="metric-label">Waiting for review</span><strong id="queue-count"
+                            class="metric-value">--</strong><small class="metric-foot">Low-confidence entries and hidden
+                            checks</small></article>
+                    <article class="metric"><span class="metric-label">Reviewed</span><strong id="reviewed"
+                            class="metric-value">0</strong><small class="metric-foot">Current API session</small>
+                    </article>
+                    <article class="metric"><span class="metric-label">Caught</span><strong id="caught"
+                            class="metric-value">0</strong><small class="metric-foot">Canaries rejected</small>
+                    </article>
+                    <article class="metric"><span class="metric-label">Missed</span><strong id="missed"
+                            class="metric-value">0</strong><small class="metric-foot">Canaries approved</small>
+                    </article>
+                </section>
+                <section class="signal-grid">
+                    <article class="panel">
+                        <div class="panel-heading">
+                            <h2>Combined trust</h2><span id="signal-source">--</span>
+                        </div>
+                        <div class="signal-cards">
+                            <div class="signal"><small id="alertness-label">Alertness</small><strong
+                                    id="alertness">--</strong>
+                                <p>Recent camera score or click-timing proxy.</p>
+                            </div>
+                            <div class="signal"><small>Click timing</small><strong id="click-timing">--</strong>
+                                <p>Decision speed and rhythm irregularity.</p>
+                            </div>
+                            <div class="signal"><small>Canary performance</small><strong
+                                    id="canary-performance">--</strong>
+                                <p>Trust rises when traps are caught.</p>
+                            </div>
+                        </div>
+                        <p class="logic-copy">In auto mode, fresh camera alertness and click rhythm combine with canary
+                            outcomes. Without recent camera data, the click-timing fallback is used. Decisions lock
+                            below the trust threshold.</p>
+                    </article>
+                    <article class="panel">
+                        <div class="panel-heading">
+                            <h2>Decision gate</h2><span id="gate-mode">--</span>
+                        </div>
+                        <div class="signal-cards">
+                            <div class="signal"><small>Trust</small><strong id="trust">--</strong>
+                                <p>Threshold <b id="threshold">60%</b></p>
+                            </div>
+                            <div class="signal"><small>Recovery pause</small><strong id="friction">--</strong>
+                                <p>Then written confirmation if needed.</p>
+                            </div>
+                            <div class="signal"><small>Camera status</small><strong id="camera-status">--</strong>
+                                <p>Control in the main dashboard.</p>
+                            </div>
+                        </div>
+                    </article>
+                </section>
+                <div id="fatigue-banner" class="fatigue" hidden role="alert"><span>!</span><span
+                        class="banner-copy"><strong>Fatigue Detected</strong><small>Review decisions are paused until
+                            trust recovers.</small></span><b class="banner-value" id="fatigue-value">--</b></div>
+                <div id="recovery-banner" class="recovery" hidden role="status"><span
+                        class="banner-copy"><strong>Recovery pause</strong><small>Pause before returning to
+                            review.</small></span><b class="banner-value" id="recovery-value">--</b></div>
+                <div id="confirm-panel" class="confirm" hidden><span><strong>Written confirmation
+                            required</strong><small>Confirm you are ready to resume reviewing (12 characters
+                            minimum).</small></span><textarea id="confirmation" rows="2" minlength="12"
+                        placeholder="I have paused and checked my attention..."></textarea></div>
+                <div class="queue-toolbar">
+                    <h2>Pending review queue</h2><span id="queue-subtitle" class="waiting">Refreshing every 2
+                        seconds</span>
+                </div>
+                <section id="queue" class="queue" aria-live="polite">
+                    <div class="empty">Loading review queue…</div>
+                </section>
+                <p class="foot">Confidence describes form structure, not clinical correctness. This is a local demo; do
+                    not enter real patient information. Canary markers are intentionally absent from this page and the
+                    queue API.</p>
+            </div>
+        </main>
+    </div>
+    <div id="toast" class="toast" role="status"></div>
+    <script>
+        const queueRoot = document.querySelector("#queue");
+        const seenAt = new Map();
+        let lastDecisionAt = null;
+        let currentTrust = null;
+        let currentQueue = [];
+        let refreshInProgress = false;
+        let toastTimer;
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>\"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" })[character]);
+        }
+
+        async function getJson(path, options) {
+            const response = await fetch(path, options);
+            const result = await response.json();
+            if (!response.ok) {
+                const error = new Error(result.error || "Request failed");
+                error.status = response.status;
+                throw error;
+            }
+            return result;
+        }
+
+        function showToast(message, type) {
+            const toast = document.querySelector("#toast");
+            toast.className = `toast show ${type || ""}`;
+            toast.textContent = message;
+            toast.setAttribute("role", type === "error" || type === "missed" ? "alert" : "status");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { toast.className = "toast"; }, 4500);
+        }
+
+        function renderSignals(trust, stats) {
+            currentTrust = trust;
+            document.querySelector("#trust").textContent = `${Math.round(trust.trust)}%`;
+            document.querySelector("#alertness").textContent = `${Math.round(trust.alertness)}%`;
+            document.querySelector("#alertness-label").textContent = trust.cameraAlertness === null ? "Click proxy" : "Alertness";
+            document.querySelector("#click-timing").textContent = `${Math.round(trust.clickTiming)}%`;
+            document.querySelector("#canary-performance").textContent = `${Math.round(trust.canaryPerformance)}%`;
+            document.querySelector("#signal-source").textContent = trust.source || "--";
+            document.querySelector("#gate-mode").textContent = `${trust.mode || "auto"} mode`;
+            document.querySelector("#threshold").textContent = `${trust.threshold}%`;
+            document.querySelector("#friction").textContent = trust.frictionSeconds > 0 ? `${trust.frictionSeconds}s` : trust.confirmationRequired ? "Confirm" : "Ready";
+            document.querySelector("#camera-status").textContent = trust.cameraAlertness === null ? "Fallback" : "Live";
+            document.querySelector("#reviewed").textContent = stats.reviewed;
+            document.querySelector("#caught").textContent = stats.caught;
+            document.querySelector("#missed").textContent = stats.missed;
+            document.querySelector("#fatigue-banner").hidden = !trust.fatigueDetected;
+            document.querySelector("#fatigue-value").textContent = `${Math.round(trust.trust)}%`;
+            document.querySelector("#recovery-banner").hidden = trust.fatigueDetected || trust.frictionSeconds <= 0;
+            document.querySelector("#recovery-value").textContent = `${trust.frictionSeconds}s`;
+            document.querySelector("#confirm-panel").hidden = trust.fatigueDetected || trust.frictionSeconds > 0 || !trust.confirmationRequired;
+        }
+
+        function renderQueue(entries) {
+            currentQueue = entries;
+            document.querySelector("#queue-count").textContent = entries.length;
+            document.querySelector("#queue-subtitle").textContent = `${entries.length} waiting · refreshes every 2 seconds`;
+            const active = new Set(entries.map((entry) => entry.id));
+            entries.forEach((entry) => { if (!seenAt.has(entry.id)) seenAt.set(entry.id, performance.now()); });
+            seenAt.forEach((_, id) => { if (!active.has(id)) seenAt.delete(id); });
+
+            if (!entries.length) {
+                queueRoot.innerHTML = '<div class="empty">No entries are waiting for a decision.</div>';
+                return;
+            }
+            queueRoot.innerHTML = entries.map((entry) => {
+                const fields = Object.entries(entry.intake || {}).map(([field, value]) => `<div><dt>${escapeHtml(field.replace(/([A-Z])/g, " $1").replace(/^./, (letter) => letter.toUpperCase()))}</dt><dd>${escapeHtml(value || "Not provided")}</dd></div>`).join("");
+                const confirmationReady = !currentTrust?.confirmationRequired || document.querySelector("#confirmation").value.trim().length >= 12;
+                const lock = !currentTrust || currentTrust.fatigueDetected || currentTrust.frictionSeconds > 0 || !confirmationReady;
+                const confidenceClass = entry.confidence <= 90 ? "low" : "high";
+                return `<article class="entry" data-id="${escapeHtml(entry.id)}">
+            <span class="avatar">${escapeHtml(entry.name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase())}</span>
+            <span class="person"><strong>${escapeHtml(entry.name)}</strong><small>${escapeHtml(entry.reason || entry.country || "Patient entry")} · ${escapeHtml(entry.country || "")}</small></span>
+            <span class="confidence"><small>Confidence</small><strong class="${confidenceClass}">${escapeHtml(entry.confidence)}%</strong></span>
+            <span class="priority">${escapeHtml(entry.priority || "Routine")}</span>
+            <span class="actions"><button class="reject" type="button" data-decision="reject" ${lock ? "disabled" : ""}>Reject</button><button class="approve" type="button" data-decision="approve" ${lock ? "disabled" : ""}>Approve</button></span>
+            <details class="details"><summary>Inspect submitted fields</summary><dl>${entry.country ? `<div><dt>Background</dt><dd>${escapeHtml(entry.country)}</dd></div>` : ""}${fields}</dl></details>
+          </article>`;
+            }).join("");
+        }
+
+        async function decide(id, decision) {
+            const now = performance.now();
+            try {
+                const result = await getJson(`/review/${encodeURIComponent(id)}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        decision,
+                        elapsedMs: Math.round(now - (seenAt.get(id) ?? now - 1800)),
+                        intervalMs: lastDecisionAt === null ? null : Math.round(now - lastDecisionAt),
+                        confirmation: document.querySelector("#confirmation").value,
+                    }),
+                });
+                lastDecisionAt = now;
+                document.querySelector("#confirmation").value = "";
+                showToast(result.message, result.outcome || "success");
+                await refresh();
+            } catch (error) {
+                showToast(error.message, error.status === 423 || error.status === 428 ? "error" : "missed");
+                await refresh();
+            }
+        }
+
+        queueRoot.addEventListener("click", (event) => {
+            const button = event.target.closest("button[data-decision]");
+            if (!button || button.disabled) return;
+            const row = button.closest("[data-id]");
+            if (row) void decide(row.dataset.id, button.dataset.decision);
+        });
+
+        document.querySelector("#confirmation").addEventListener("input", () => {
+            const confirmationReady = !currentTrust?.confirmationRequired || document.querySelector("#confirmation").value.trim().length >= 12;
+            const locked = !currentTrust || currentTrust.fatigueDetected || currentTrust.frictionSeconds > 0 || !confirmationReady;
+            queueRoot.querySelectorAll(".actions button").forEach((button) => { button.disabled = locked; });
+        });
+
+        async function refresh() {
+            if (refreshInProgress) return;
+            refreshInProgress = true;
+            try {
+                const [queue, trust, stats] = await Promise.all([
+                    getJson("/queue"),
+                    getJson("/trust"),
+                    getJson("/stats"),
+                ]);
+                document.querySelector("#connection").textContent = "Local service connected";
+                renderSignals(trust, stats);
+                renderQueue(queue.queue);
+            } catch (error) {
+                document.querySelector("#connection").textContent = "Service unavailable";
+                queueRoot.innerHTML = `<div class="empty">${escapeHtml(error.message)}. Start the local API to load live data.</div>`;
+            } finally {
+                refreshInProgress = false;
+            }
+        }
+
+        void refresh();
+        setInterval(refresh, 2000);
+    </script>
+</body>
+
+</html>
