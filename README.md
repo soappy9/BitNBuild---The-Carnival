@@ -1,2 +1,0 @@
-# BitNBuild---The-Carnival
-A healthcare intake system that adapts itself to each patient's background and flags anything it's unsure of for human review, while a webcam-based fatigue check quietly tests whether that reviewer is actually paying attention.
